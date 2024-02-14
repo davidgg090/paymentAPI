@@ -26,7 +26,7 @@ class Transaccion(Base):
     """
     __tablename__ = "transactions"
 
-    id = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     merchant_id = Column(Integer, ForeignKey('merchants.id'))
     customer_id = Column(Integer, ForeignKey('customers.id'))
     amount = Column(Numeric(10, 2), nullable=False)
