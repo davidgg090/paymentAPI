@@ -22,7 +22,7 @@ class Merchant(Base):
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     is_active = Column(Boolean, default=True)
-    authentication_key = Column(String(255), nullable=False)
+    private_key = Column(String(255), nullable=False)
     amount_account = Column(Integer, default=0, nullable=False)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime, nullable=False)
