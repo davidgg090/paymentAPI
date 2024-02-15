@@ -12,9 +12,19 @@ router = APIRouter(
 
 @router.get("/")
 async def root():
+    """Root endpoint.
+
+    Returns:
+        dict: A dictionary with a greeting message.
+    """
     return {"message": "Hello World"}
 
 
-@router.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+@router.get("/health")
+async def health():
+    """Check the health status of the application.
+
+    Returns:
+        dict: A dictionary with a health status message.
+    """
+    return {"message": "Healthy"}

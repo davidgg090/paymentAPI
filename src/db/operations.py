@@ -67,22 +67,26 @@ def create_merchant(db: SessionLocal, merchant: MerchantCreate) -> Merchant:
 
 ## TRANSACTION
 
-def create_transaction(db: SessionLocal, transaction: TransactionCreate) -> Transaction:
-    """Creates a new transaction in the database.
+def create_transaction(db: SessionLocal, transaction: TransactionCreate) -> TransactionModel:
+    """Crea una nueva transacción en la base de datos.
 
     Args:
-        db (Session): The database session.
-        transaction (TransactionCreate): The transaction to create.
+        db (Session): La sesión de la base de datos.
+        transaction (TransactionCreate): La transacción a crear.
 
     Returns:
-        Transaction: The transaction created in the database.
+        TransactionModel: La transacción creada en la base de datos.
     """
     try:
-        transaction['token'] = str(uuid.uuid4())
-        db_transaction = TransactionModel(**transaction.dict())
+        transaction_data = transaction.dict()
+        transaction_data['token'] = str(uuid.uuid4())
+        transaction_data['state'] = 'pending'
+        db_transaction = TransactionModel(**transaction_data)
+
         db.add(db_transaction)
         db.commit()
         db.refresh(db_transaction)
+
         return db_transaction
     except Exception as e:
         db.rollback()
@@ -221,8 +225,11 @@ def update_customer(db: SessionLocal, customer: Customer, customer_update: Custo
     Returns:
         Customer: The updated customer.
     """
-    for field, value in customer_update:
-        setattr(customer, field, value)
+    customer_update_dict = {k: v for k, v in customer_update.dict().items() if v is not None}
+
+    for field, value in customer_update_dict.items():
+        if hasattr(customer, field):
+            setattr(customer, field, value)
     db.commit()
     db.refresh(customer)
     return customer
@@ -241,7 +248,8 @@ def update_merchant(db: SessionLocal, merchant: Merchant, merchant_update: Merch
     Returns:
         Merchant: The updated merchant.
     """
-    for field, value in merchant_update:
+    merchant_update_dict = {k: v for k, v in merchant_update.dict().items() if v is not None}
+    for field, value in merchant_update_dict.items():
         setattr(merchant, field, value)
     db.commit()
     db.refresh(merchant)
@@ -261,7 +269,8 @@ def update_transaction(db: SessionLocal, transaction: Transaction,
     Returns:
         Transaction: The updated transaction.
     """
-    for field, value in transaction_update:
+    transaction_update_dict = {k: v for k, v in transaction_update.dict().items() if v is not None}
+    for field, value in transaction_update_dict.items():
         setattr(transaction, field, value)
     db.commit()
     db.refresh(transaction)

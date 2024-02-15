@@ -19,9 +19,8 @@ def get_db():
         db.close()
 
 
-
 router = APIRouter(
-    prefix="/merchant",
+    prefix="/api/v1/merchant",
     tags=["merchants"],
     responses={
         404: {"description": "Not found"},
@@ -92,4 +91,7 @@ async def update_merchant(merchant_id: int, merchant: MerchantUpdate, db: Sessio
     Returns:
         Merchant: The updated merchant object.
     """
-    return update(db, merchant_id, merchant)
+    merchant_old = get_merchant_by_id(db, merchant_id)
+    if not merchant_old:
+        raise HTTPException(status_code=404, detail="Merchant not found")
+    return update(db, merchant_old, merchant)

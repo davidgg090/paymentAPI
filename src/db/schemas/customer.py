@@ -50,6 +50,7 @@ class CustomerUpdate(CustomerBase):
     hash_credit_card: Optional[str] = Field(None, description="The hash of the customer's credit card.")
 
 
+
 class Customer(CustomerBase):
     """Represents a customer.
 

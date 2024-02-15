@@ -19,7 +19,7 @@ def get_db():
 
 
 router = APIRouter(
-    prefix="/transaction",
+    prefix="/api/v1/transaction",
     tags=["transactions"],
     responses={
         404: {"description": "Not found"},

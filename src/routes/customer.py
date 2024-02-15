@@ -21,7 +21,7 @@ def get_db():
 
 
 router = APIRouter(
-    prefix="/customer",
+    prefix="/api/v1/customer",
     tags=["customers"],
     responses={
         404: {"description": "Not found"},
@@ -72,7 +72,10 @@ async def update_customer(customer_id: int, customer: CustomerUpdate, db: Sessio
     Returns:
         Customer: The updated customer object.
     """
-    return update(db, customer_id, customer)
+    customer_old = get_customer(db, customer_id)
+    if not customer_old:
+        raise HTTPException(status_code=404, detail="Customer not found")
+    return update(db, customer_old, customer)
 
 
 @router.post("/")

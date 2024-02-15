@@ -18,7 +18,6 @@ class TransactionBase(BaseModel):
     customer_id: int = Field(..., description="The ID of the customer associated with the transaction.")
     amount: condecimal(max_digits=10, decimal_places=2) = Field(..., description="The amount of the transaction.")
     currency: str = Field(..., max_length=3, description="The currency of the transaction.")
-    state: str = Field(..., description="The state of the transaction.")
     hash_credit_card: str = Field(..., description="The hash of the credit card used in the transaction.")
 
 
