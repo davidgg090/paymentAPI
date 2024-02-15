@@ -23,7 +23,7 @@ class Customer(Base):
     name = Column(String(255), nullable=False)
     email = Column(String(255), nullable=False, unique=True)
     address = Column(String, nullable=True)
-    hash_credit_card = Column(String, nullable=False)
+    hash_credit_card = Column(String, nullable=False, unique=True)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)

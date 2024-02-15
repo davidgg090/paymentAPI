@@ -25,5 +25,6 @@ class Merchant(Base):
     email = Column(String(255), nullable=False, unique=True)
     is_active = Column(Boolean, default=True)
     amount_account = Column(Integer, default=0, nullable=False)
+    authentication_key = Column(String, nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)

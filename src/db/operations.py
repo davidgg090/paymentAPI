@@ -136,6 +136,20 @@ def get_merchant_by_id(db: SessionLocal, merchant_id: int) -> Merchant:
     return db.query(MerchantModel).filter(MerchantModel.id == merchant_id).first()
 
 
+def get_merchants(db: SessionLocal, skip: int = 0, limit: int = 10) -> List[Merchant]:
+    """Retrieves all merchants from the database.
+
+    Args:
+        db (Session): The database session.
+        skip (int): The number of records to skip.
+        limit (int): The number of records to retrieve.
+
+    Returns:
+        List[Merchant]: The list of merchants retrieved from the database.
+    """
+    return db.query(MerchantModel).offset(skip).limit(limit).all()
+
+
 ## TRANSACTION
 
 def get_transaction_by_id(db: SessionLocal, transaction_id: int) -> Transaction:
