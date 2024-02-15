@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from src.db.connection import Base
 
 
-class Transaccion(Base):
+class Transaction(Base):
     """Represents a transaction.
 
     Args:
