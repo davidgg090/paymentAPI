@@ -22,6 +22,7 @@ class TransactionBase(BaseModel):
     hash_credit_card: str = Field(..., description="The hash of the credit card used in the transaction.")
 
 
+
 class TransactionCreate(TransactionBase):
     pass
 
@@ -70,6 +71,7 @@ class Transaction(BaseModel):
     currency: str
     state: str
     hash_credit_card: str
+    token: str
     created_at: datetime
     updated_at: Optional[datetime] = None
 

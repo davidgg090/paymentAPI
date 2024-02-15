@@ -1,3 +1,4 @@
+import uuid
 from typing import List
 
 from fastapi import HTTPException
@@ -77,6 +78,7 @@ def create_transaction(db: SessionLocal, transaction: TransactionCreate) -> Tran
         Transaction: The transaction created in the database.
     """
     try:
+        transaction['token'] = str(uuid.uuid4())
         db_transaction = TransactionModel(**transaction.dict())
         db.add(db_transaction)
         db.commit()
