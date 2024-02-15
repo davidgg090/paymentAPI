@@ -26,7 +26,7 @@ class Customer(Base):
     hash_credit_card = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
 
 
 

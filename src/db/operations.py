@@ -107,6 +107,20 @@ def get_customer(db: SessionLocal, customer_id: int) -> Customer:
     return db.query(CustomerModel).filter(CustomerModel.id == customer_id).first()
 
 
+def get_customers(db: SessionLocal, skip: int = 0, limit: int = 10) -> List[Customer]:
+    """Retrieves all customers from the database.
+
+    Args:
+        db (Session): The database session.
+        skip (int): The number of records to skip.
+        limit (int): The number of records to retrieve.
+
+    Returns:
+        List[Customer]: The list of customers retrieved from the database.
+    """
+    return db.query(CustomerModel).offset(skip).limit(limit).all()
+
+
 ## MERCHANT
 
 def get_merchant_by_id(db: SessionLocal, merchant_id: int) -> Merchant:
