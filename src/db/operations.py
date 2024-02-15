@@ -11,6 +11,7 @@ from src.db.schemas.transaction import Transaction, TransactionCreate, Transacti
 from src.db.schemas.customer import Customer, CustomerCreate, CustomerUpdate
 from src.db.schemas.merchant import Merchant, MerchantCreate, MerchantUpdate
 from src.db.connection import SessionLocal
+from src.utils.bank import BankUtils
 
 
 # CREATE
@@ -309,3 +310,66 @@ def merchant_validation(merchant: Merchant):
         raise HTTPException(status_code=404, detail="Merchant not found")
     if not merchant.is_active:
         raise HTTPException(status_code=400, detail="Merchant is not active")
+
+
+def process_transaction(db: SessionLocal, transaction_token: str, type: str) -> Transaction:
+    """
+    Process a transaction.
+
+    Args:
+        db: The database session.
+        transaction_token: The token of the transaction.
+        type: The type of the transaction.
+
+    Returns:
+        The processed transaction.
+
+    Raises:
+        HTTPException: If the transaction is not found, the customer is not found or not active,
+            the merchant is not found or not active, or the credit card is invalid.
+    """
+    transaction = db.query(TransactionModel).filter(TransactionModel.token == transaction_token).first()
+
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found.")
+    if transaction.state != 'pending':
+        raise HTTPException(status_code=400, detail="Transaction already processed.")
+
+    customer = get_customer(db, transaction.customer_id)
+    merchant = get_merchant_by_id(db, transaction.merchant_id)
+
+    if not customer or not customer.is_active:
+        transaction.state = 'failed'
+        raise HTTPException(status_code=400, detail="Customer not found or not active.")
+    elif not merchant or not merchant.is_active:
+        transaction.state = 'failed'
+        raise HTTPException(status_code=400, detail="Merchant not found or not active.")
+    else:
+        if BankUtils.verify_hash_credit_card(transaction.hash_credit_card, customer.hash_credit_card):
+            if type == 'capture':
+                transaction.state = 'success'
+                merchant.amount_account += transaction.amount
+            elif type == 'refund':
+                transaction.state = 'refunded'
+                merchant.amount_account -= transaction.amount
+        else:
+            raise HTTPException(status_code=400, detail="Invalid credit card.")
+    try:
+        db.add(transaction)
+        db.commit()
+        db.refresh(transaction)
+        return transaction
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e)) from e
+
+    try:
+        db.add(merchant)
+        db.commit()
+        db.refresh(merchant)
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e)) from e
+    finally:
+        db.close()
+    return transaction

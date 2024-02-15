@@ -6,7 +6,8 @@ from src.db.schemas.transaction import Transaction, TransactionCreate, Transacti
 from src.db.operations import (get_transaction_by_id,
                                create_transaction as create,
                                update_transaction as update,
-                               get_transaction_by_token
+                               get_transaction_by_token,
+                                process_transaction
                                )
 
 
@@ -92,3 +93,37 @@ async def update_transaction(transaction_id: int, transaction: TransactionUpdate
     if db_transaction is None:
         raise HTTPException(status_code=404, detail="Transaction not found")
     return update(db, db_transaction, transaction)
+
+
+@router.post("/process/{token}", response_model=Transaction)
+async def process_transaction_by_token(token: str, db: Session = Depends(get_db)):
+    """Process a transaction.
+
+    Args:
+        token (str): The token of the transaction to process.
+    Raises:
+        HTTPException: If the transaction is not found.
+    Returns:
+        Transaction: The processed transaction.
+    """
+    transaction = process_transaction(db, token, 'capture')
+    if transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction
+
+
+@router.post("/refund/{token}", response_model=Transaction)
+async def refund_transaction_by_token(token: str, db: Session = Depends(get_db)):
+    """Refund a transaction.
+
+    Args:
+        token (str): The token of the transaction to refund.
+    Raises:
+        HTTPException: If the transaction is not found.
+    Returns:
+        Transaction: The refunded transaction.
+    """
+    transaction = process_transaction(db, token, 'refund')
+    if transaction is None:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction
