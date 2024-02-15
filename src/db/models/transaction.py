@@ -35,7 +35,7 @@ class Transaction(Base):
     hash_credit_card = Column(String, nullable=False)
     token = Column(String, nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, onupdate=datetime.utcnow)
+    updated_at = Column(DateTime, onupdate=datetime.utcnow, default=datetime.utcnow)
 
     merchant = relationship("Merchant")
     customer = relationship("Customer")
