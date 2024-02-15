@@ -33,6 +33,7 @@ class Transaccion(Base):
     currency = Column(String(3), nullable=False)
     state = Column(String, nullable=False, default='pending')
     hash_credit_card = Column(String, nullable=False)
+    token = Column(String, nullable=False, unique=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, onupdate=datetime.utcnow)
 
