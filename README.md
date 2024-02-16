@@ -2,6 +2,7 @@
 
 This is a simple payment gateway API that allows you to make payments and retrieve payment details.
 
+![alt text](https://github.com/davidgg090/paymentAPI/blob/main/blob/api.png?raw=true)
 
 
 
