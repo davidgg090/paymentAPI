@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from src.routes.customer import router as customer_router
 from src.routes.merchant import router as merchant_router
 from src.routes.transaction import router as transaction_router
+from src.routes.auth import router as auth_router
 from src.routes.root import router as root_router
 
 app = FastAPI(
@@ -13,6 +14,7 @@ app = FastAPI(
     redoc_url="/api/v1/redoc"
 )
 
+app.include_router(auth_router)
 app.include_router(root_router)
 app.include_router(customer_router)
 app.include_router(merchant_router)

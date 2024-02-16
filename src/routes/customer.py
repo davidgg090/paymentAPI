@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.connection import SessionLocal
+from src.db.models.user import User
 from src.db.schemas.customer import Customer, CustomerCreate, CustomerUpdate
 from src.db.operations import (get_customer,
                                create_customer as create,
@@ -9,6 +10,7 @@ from src.db.operations import (get_customer,
                                get_customers,
                                customer_validation
                                )
+from src.routes.auth import get_current_user
 
 
 # Dependency
@@ -33,7 +35,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[Customer])
-async def read_customers(db: Session = Depends(get_db)):
+async def read_customers(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Retrieve a list of customers.
 
     Returns:
@@ -43,7 +45,9 @@ async def read_customers(db: Session = Depends(get_db)):
 
 
 @router.get("/{customer_id}")
-async def read_customer(customer_id: int, db: Session = Depends(get_db)):
+async def read_customer(customer_id: int,
+                        current_user: User = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
     """Retrieve a customer by ID.
 
     Args:
@@ -62,7 +66,9 @@ async def read_customer(customer_id: int, db: Session = Depends(get_db)):
 
 
 @router.put("/{customer_id}")
-async def update_customer(customer_id: int, customer: CustomerUpdate, db: Session = Depends(get_db)):
+async def update_customer(customer_id: int, customer: CustomerUpdate,
+                          current_user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
     """Update a customer.
 
     Args:
@@ -79,7 +85,8 @@ async def update_customer(customer_id: int, customer: CustomerUpdate, db: Sessio
 
 
 @router.post("/")
-async def create_customer(customer: CustomerCreate, db: Session = Depends(get_db)):
+async def create_customer(customer: CustomerCreate, current_user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
     """Create a new customer.
 
     Args:

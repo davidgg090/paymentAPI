@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.connection import SessionLocal
+from src.db.models.user import User
 from src.db.schemas.merchant import Merchant, MerchantCreate, MerchantUpdate
 from src.db.operations import (get_merchant_by_id,
                                create_merchant as create,
@@ -9,6 +10,7 @@ from src.db.operations import (get_merchant_by_id,
                                get_merchants,
                                merchant_validation
                                )
+from src.routes.auth import get_current_user
 
 
 def get_db():
@@ -32,7 +34,7 @@ router = APIRouter(
 
 
 @router.get("/", response_model=list[Merchant])
-async def read_merchants(db: Session = Depends(get_db)):
+async def read_merchants(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     """Retrieve a list of merchants.
 
     Returns:
@@ -42,7 +44,8 @@ async def read_merchants(db: Session = Depends(get_db)):
 
 
 @router.get("/{merchant_id}")
-async def read_merchant(merchant_id: int, db: Session = Depends(get_db)):
+async def read_merchant(merchant_id: int, current_user: User = Depends(get_current_user),
+                        db: Session = Depends(get_db)):
     """Retrieve a merchant by ID.
 
     Args:
@@ -62,7 +65,8 @@ async def read_merchant(merchant_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=Merchant)
-async def create_merchant(merchant: MerchantCreate, db: Session = Depends(get_db)):
+async def create_merchant(merchant: MerchantCreate, current_user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
     """Create a new merchant.
 
     Args:
@@ -81,7 +85,9 @@ async def create_merchant(merchant: MerchantCreate, db: Session = Depends(get_db
 
 
 @router.put("/{merchant_id}", response_model=Merchant)
-async def update_merchant(merchant_id: int, merchant: MerchantUpdate, db: Session = Depends(get_db)):
+async def update_merchant(merchant_id: int, merchant: MerchantUpdate,
+                          current_user: User = Depends(get_current_user),
+                          db: Session = Depends(get_db)):
     """Update a merchant.
 
     Args:

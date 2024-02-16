@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from src.db.connection import SessionLocal
+from src.db.models.user import User
 from src.db.schemas.transaction import Transaction, TransactionCreate, TransactionUpdate
 from src.db.operations import (get_transaction_by_id,
                                create_transaction as create,
@@ -9,6 +10,7 @@ from src.db.operations import (get_transaction_by_id,
                                get_transaction_by_token,
                                 process_transaction
                                )
+from src.routes.auth import get_current_user
 
 
 def get_db():
@@ -32,7 +34,8 @@ router = APIRouter(
 
 
 @router.get("/{transaction_id}", response_model=Transaction)
-async def read_transaction(transaction_id: int, db: Session = Depends(get_db)):
+async def read_transaction(transaction_id: int, current_user: User = Depends(get_current_user),
+                           db: Session = Depends(get_db)):
     """Retrieve a transaction by ID.
 
     Args:
@@ -49,7 +52,8 @@ async def read_transaction(transaction_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/token/{token}", response_model=Transaction)
-async def read_transaction_by_token(token: str, db: Session = Depends(get_db)):
+async def read_transaction_by_token(token: str, current_user: User = Depends(get_current_user),
+                                    db: Session = Depends(get_db)):
     """Retrieve a transaction by token.
 
     Args:
@@ -66,7 +70,8 @@ async def read_transaction_by_token(token: str, db: Session = Depends(get_db)):
 
 
 @router.post("/", response_model=Transaction)
-async def create_transaction(transaction: TransactionCreate, db: Session = Depends(get_db)):
+async def create_transaction(transaction: TransactionCreate, current_user: User = Depends(get_current_user),
+                             db: Session = Depends(get_db)):
     """Create a new transaction.
 
     Args:
@@ -78,7 +83,9 @@ async def create_transaction(transaction: TransactionCreate, db: Session = Depen
 
 
 @router.put("/{transaction_id}", response_model=Transaction)
-async def update_transaction(transaction_id: int, transaction: TransactionUpdate, db: Session = Depends(get_db)):
+async def update_transaction(transaction_id: int, transaction: TransactionUpdate,
+                             current_user: User = Depends(get_current_user),
+                            db: Session = Depends(get_db)):
     """Update a transaction.
 
     Args:
@@ -96,7 +103,8 @@ async def update_transaction(transaction_id: int, transaction: TransactionUpdate
 
 
 @router.post("/process/{token}", response_model=Transaction)
-async def process_transaction_by_token(token: str, db: Session = Depends(get_db)):
+async def process_transaction_by_token(token: str, current_user: User = Depends(get_current_user),
+                                       db: Session = Depends(get_db)):
     """Process a transaction.
 
     Args:
@@ -113,7 +121,8 @@ async def process_transaction_by_token(token: str, db: Session = Depends(get_db)
 
 
 @router.post("/refund/{token}", response_model=Transaction)
-async def refund_transaction_by_token(token: str, db: Session = Depends(get_db)):
+async def refund_transaction_by_token(token: str, current_user: User = Depends(get_current_user),
+                                      db: Session = Depends(get_db)):
     """Refund a transaction.
 
     Args:
