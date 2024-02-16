@@ -4,6 +4,7 @@ from src.routes.merchant import router as merchant_router
 from src.routes.transaction import router as transaction_router
 from src.routes.auth import router as auth_router
 from src.routes.root import router as root_router
+from src.utils.audit import audit_log_middleware
 
 app = FastAPI(
     title="Payment Gateway API",
@@ -13,6 +14,9 @@ app = FastAPI(
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc"
 )
+
+
+app.middleware("http")(audit_log_middleware)
 
 app.include_router(auth_router)
 app.include_router(root_router)
