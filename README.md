@@ -55,6 +55,32 @@ docker build -t payment-gateway-api .
 docker run --env-file .env p 8000:80 payment-gateway-api
 ```
 
+## Database
+
+Open the file `execute_sql.sh` and replace the environment variables with the correct values for your database.
+
+```bash
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+```
+
+
+
+For create the tables for the database, make it executable the file in folder script call execute_sql.sh with the following command in the terminal:
+    
+```bash
+chmod +x execute_sql.sh
+```
+
+Then, execute the file with the following command:
+
+```bash
+./execute_sql.sh
+```
+
+
 ## Technologies
 
 - FastAPI
